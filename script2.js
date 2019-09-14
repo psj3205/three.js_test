@@ -43,6 +43,9 @@ function init() {
     spotLight.castShadow = true;
     scene.add(spotLight);
 
+    scene.fog = new THREE.FogExp2(0xffffff, 0.01);
+    scene.overrideMaterial = new THREE.MeshLambertMaterial({color:0xfe0ff0});
+
     document.getElementById("WebGL-output").appendChild(renderer.domElement);
 
     var step = 0;
@@ -50,6 +53,7 @@ function init() {
     var controls = new function () {
         this.rotationSpeed = 0.02;
         this.numberOfObjects = scene.children.length;
+        this.FogExp2_Density = 0.001;
 
         this.addCube = function () {
             const cubeSize = Math.ceil((Math.random() * 3));
@@ -84,12 +88,15 @@ function init() {
     gui.add(controls, 'addCube');
     gui.add(controls, 'removeCube');
     gui.add(controls, 'outputObjects');
+    gui.add(controls, 'FogExp2_Density', 0, 0.05);
     gui.add(controls, 'numberOfObjects').listen();
 
     renderScene();
 
     function renderScene() {
         stats.update();
+
+        scene.fog.density = controls.FogExp2_Density;
 
         scene.traverse(obj => {
             if (obj instanceof THREE.Mesh && obj != plane) {
